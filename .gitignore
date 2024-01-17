@@ -1,0 +1,12 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+.rasa
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Rasa-related
+graph.html
