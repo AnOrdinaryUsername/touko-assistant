@@ -89,3 +89,20 @@ nlu:
     - are you a human?
     - am I talking to a bot?
     - am I talking to a human?
+
+- intent: tell_joke
+  examples: |
+    - tell me a [programming]{"entity": "joke_category"} joke
+    - say something funny
+    - say something [punny]{"entity": "joke_category", "value": "pun"}
+    - utter something humorous
+    - please knock my socks off
+
+- lookup: joke_category
+  examples: |
+    - programming
+    - miscellaneous
+    - dark
+    - pun
+    - spooky
+    - christmas

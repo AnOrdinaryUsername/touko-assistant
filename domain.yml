@@ -9,8 +9,30 @@ intents:
   - mood_unhappy
   - bot_challenge
   - weird_message
+  - tell_joke
+
+entities:
+- joke_category
+
+slots:
+  joke_category:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: joke_category
+
+actions:
+- action_tell_joke
 
 responses:
+  utter_ask_rephrase:
+  - text: "Apologies, but I didn't quite understand the message. Try rewording it."
+  - text: "Sorry, but can you please rephrase the message?"
+
+  utter_ask_default:
+  - text: "I'm sorry sir, it's time for you to leave."
+
   utter_greet:
   - text: "Hey! How are you?"
 
@@ -28,7 +50,8 @@ responses:
   - text: "Bye"
 
   utter_iamabot:
-  - text: "I am a bot, powered by Rasa."
+  - text: "My name is Touko, your personal virtual assistant. I'm a bot designed to assist you."
+  - text: "I'm Touko, a bot that aims to please."
 
 session_config:
   session_expiration_time: 60
