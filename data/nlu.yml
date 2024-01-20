@@ -100,12 +100,30 @@ nlu:
     - say something [punny]{"entity": "joke_category", "value": "pun"}
     - utter something humorous
     - please knock my socks off
+    - joke
 
 - lookup: joke_category
   examples: |
     - programming
     - miscellaneous
-    - dark
     - pun
     - spooky
     - christmas
+
+- intent: ask_weather
+  examples: |
+    - weather
+    - wather
+    - today's weather
+    - will it be sunny today?
+    - will it rain today?
+    - what's the temperature?
+    - what's it like outside?
+    - what's is the weather in [Los Angeles](location)
+    - is it hot or cold outside?
+    - should i bring an umbrella?
+    - are there a lot of clouds outside
+    - tell me the temp
+    - any weather updates
+    - is it cloudy
+    - how's the weather?
