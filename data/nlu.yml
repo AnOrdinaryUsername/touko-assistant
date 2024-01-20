@@ -92,7 +92,10 @@ nlu:
 
 - intent: tell_joke
   examples: |
+    - I want a [programming]{"entity": "joke_category"} joke
+    - I want a joke
     - tell me a [programming]{"entity": "joke_category"} joke
+    - tell me a [pun]{"entity": "joke_category", "value": "pun"}
     - say something funny
     - say something [punny]{"entity": "joke_category", "value": "pun"}
     - utter something humorous

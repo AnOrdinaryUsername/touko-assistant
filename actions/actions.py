@@ -10,6 +10,7 @@ from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
 
 from jokeapi import Jokes
+from jokeapi.main import CategoryError
 import asyncio
 
 class ActionTellJoke(Action):
@@ -28,7 +29,17 @@ class ActionTellJoke(Action):
 
         print(category)
 
-        joke = await j.get_joke(category=[category])
+        try:
+            joke = await j.get_joke(category=[category], safe_mode=True)
+        except CategoryError:
+            error = (
+                        f"Sorry, but '{category}' isn't a category I recognize. "
+                        "The available categories are Any, Misc, Programming, "
+                        "Pun, Spooky, and Christmas."
+                    )
+            
+            dispatcher.utter_message(text=error)
+            return []
 
         if joke["type"] == "single":
             dispatcher.utter_message(text=joke["joke"])
