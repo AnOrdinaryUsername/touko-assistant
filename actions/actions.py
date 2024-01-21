@@ -82,17 +82,17 @@ class ActionSayWeather(Action):
                   domain: Dict[Text, Any]
                 ) -> List[Dict[Text, Any]]:
         
-        location = next(tracker.get_latest_entity_values("location"), 
+        location = next(tracker.get_latest_entity_values("GPE"), 
                         os.environ["DEFAULT_LOCATION"])
 
         api_key = os.environ["OPENWEATHER_API_KEY"]
-        geocoding_base_url = "http://api.openweathermap.org/geo/1.0/direct"
+        geocoding_base_url = "https://api.openweathermap.org/geo/1.0/direct"
         query = "%20".join(location.split())
 
         coordinates = (
             f"{geocoding_base_url}"
             f"?q={query}"
-            f"&limit=1"
+            "&limit=1"
             f"&appid={api_key}"
         )
         coords_response = requests.get(coordinates)
@@ -109,7 +109,7 @@ class ActionSayWeather(Action):
         current_weather = (
             f"{base_url}"
             f"?lat={latitude}&lon={longitude}"
-            f"&units=imperial"
+            "&units=imperial"
             f"&appid={api_key}"
         )
 
@@ -134,8 +134,8 @@ class ActionSayWeather(Action):
 
             weather_report = (
                 f"{place} is currently experiencing {description}. "
-                f"The temperature is {temp}°F, with a low of {min_temp}°F "
-                f"and a high of {max_temp}°F."
+                f"Right now, the temperature is {temp}°F, "
+                f"with a low of {min_temp}°F and a high of {max_temp}°F."
                 "\n\n\n"
                 f"Cloudiness is at {cloud_percent}%."
                 "\n"

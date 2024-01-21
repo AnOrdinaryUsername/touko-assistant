@@ -13,7 +13,7 @@ intents:
 
 entities:
 - joke_category
-- location
+- GPE
 
 slots:
   joke_category:
@@ -22,12 +22,12 @@ slots:
     mappings:
       - type: from_entity
         entity: joke_category
-  location:
+  GPE:
     type: text
     influence_conversation: false
     mappings:
       - type: from_entity
-        entity: location
+        entity: GPE
 
 actions:
 - action_tell_joke

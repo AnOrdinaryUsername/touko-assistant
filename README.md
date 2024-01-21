@@ -1,5 +1,10 @@
 # touko-assistant
 
+Validate your data
+```
+rasa data validate
+```
+
 Train a model
 ```
 rasa train
@@ -14,3 +19,15 @@ Interact with the latest model on the command line
 ```
 rasa shell
 ```
+
+## Features
+
+- Tell jokes
+- Say the weather
+- Time in X place
+- Print stuff using ESC/POS Thermal Printer
+  - Basic text
+  - Messages posted by bot
+  - Checklist
+- Check Calendar
+- Set notification

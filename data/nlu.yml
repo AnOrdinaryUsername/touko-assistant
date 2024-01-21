@@ -92,15 +92,18 @@ nlu:
 
 - intent: tell_joke
   examples: |
-    - I want a [programming]{"entity": "joke_category"} joke
+    - I want a [christmas]{"entity": "joke_category"} joke
     - I want a joke
     - tell me a [programming]{"entity": "joke_category"} joke
     - tell me a [pun]{"entity": "joke_category", "value": "pun"}
     - say something funny
     - say something [punny]{"entity": "joke_category", "value": "pun"}
+    - let's hear something [spoopy]{"entity": "joke_category", "value": "spooky"}
+    - utter something [2spooky4me]{"entity": "joke_category", "value": "spooky"}
     - utter something humorous
     - please knock my socks off
     - joke
+    - make a joke about [programming socks]{"entity": "joke_category", "value": "programming"}
 
 - lookup: joke_category
   examples: |
@@ -110,20 +113,42 @@ nlu:
     - spooky
     - christmas
 
+- synonym: programming
+  examples: |
+    - programming socks
+    - pogramming
+    - porgramming
+    - programmer
+    - program
+
+- synonym: pun
+  examples: |
+    - punny
+
+- synonym: spooky
+  examples: |
+    - spoopy
+    - 2spooky4me
+    - 3spooky5me
+    - 3spoopy5me
+    - scary
+
 - intent: ask_weather
   examples: |
     - weather
     - wather
     - today's weather
+    - [Paris]{"entity": "GPE", "value": "Paris"} weather
     - will it be sunny today?
     - will it rain today?
     - what's the temperature?
     - what's it like outside?
-    - what's is the weather in [Los Angeles](location)
+    - what's is the weather in [Los Angeles]{"entity": "GPE", "value": "Los Angeles" }
     - is it hot or cold outside?
     - should i bring an umbrella?
     - are there a lot of clouds outside
     - tell me the temp
+    - tell me the weather in [Berlin]{"entity": "GPE", "value": "Berlin" }
     - any weather updates
     - is it cloudy
     - how's the weather?
