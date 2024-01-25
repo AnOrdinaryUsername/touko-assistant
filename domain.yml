@@ -10,10 +10,13 @@ intents:
   - bot_challenge
   - tell_joke
   - ask_weather
+  - time_at_location
+  - is_it_daytime
 
 entities:
 - joke_category
 - GPE
+- is_daytime
 
 slots:
   joke_category:
@@ -28,10 +31,18 @@ slots:
     mappings:
       - type: from_entity
         entity: GPE
+  is_daytime:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: is_daytime
 
 actions:
 - action_tell_joke
 - action_say_weather
+- action_get_time
+- action_tell_day_state
 
 responses:
   utter_ask_rephrase:

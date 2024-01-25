@@ -22,9 +22,12 @@ rasa shell
 
 ## Features
 
-- Tell jokes
-- Say the weather
-- Time in X place
+- Tell jokes ✅  
+- Say the weather ✅ 
+- Time in X place ✅ 
+- Exchange rates
+- Bible quotes
+- Mangadex chapter feed
 - Print stuff using ESC/POS Thermal Printer
   - Basic text
   - Messages posted by bot

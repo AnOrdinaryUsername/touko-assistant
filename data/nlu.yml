@@ -138,17 +138,35 @@ nlu:
     - weather
     - wather
     - today's weather
-    - [Paris]{"entity": "GPE", "value": "Paris"} weather
+    - [Paris]{"entity": "GPE"} weather
     - will it be sunny today?
     - will it rain today?
     - what's the temperature?
     - what's it like outside?
-    - what's is the weather in [Los Angeles]{"entity": "GPE", "value": "Los Angeles" }
+    - what's is the weather in [Los Angeles]{"entity": "GPE"}
     - is it hot or cold outside?
     - should i bring an umbrella?
     - are there a lot of clouds outside
     - tell me the temp
-    - tell me the weather in [Berlin]{"entity": "GPE", "value": "Berlin" }
+    - tell me the weather in [Berlin]{"entity": "GPE"}
     - any weather updates
     - is it cloudy
     - how's the weather?
+
+- intent: time_at_location
+  examples: |
+    - what time is it now
+    - what time is it in [Tokyo](GPE)
+    - time in [Madrid](GPE)
+    - tell me the tim in [Bat Cave](GPE)
+    - can you tell me the time in [Dubai](GPE)
+    - [Manila](GPE) time
+
+- intent: is_it_daytime
+  examples: |
+    - has the [sun risen]{"entity": "is_daytime", "value": "day"}?
+    - is it [nighttime]{"entity": "is_daytime", "value": "night"} in [Tokyo]("GPE")?
+    - is it [daytime]{"entity": "is_daytime", "value": "day"} yet?
+    - is it [daytime]{"entity": "is_daytime", "value": "day"} in [Jakarta]("GPE")
+    - can i see the [moon]{"entity": "is_daytime", "value": "night"} outside
+    - will the [sun]{"entity": "is_daytime", "value": "day"} be out in [Taipei]("GPE")

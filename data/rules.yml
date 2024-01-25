@@ -22,6 +22,17 @@ rules:
   - intent: ask_weather
   - action: action_say_weather
 
+- rule: State the time
+  steps:
+  - intent: time_at_location
+  - action: action_get_time
+
+- rule: Tell user if its daytime or nighttime
+  steps:
+  - intent: is_it_daytime
+  - action: action_tell_day_state
+
+
 # https://rasa.com/docs/rasa/fallback-handoff/#two-stage-fallback
 # In case of ambiguity, the bot will ask for a rephrase, and if
 # that doesn't work, it will say a default phrase.

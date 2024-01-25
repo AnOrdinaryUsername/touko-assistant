@@ -61,6 +61,7 @@ import os
 import requests
 import math
 from dotenv import load_dotenv
+from actions.api.open_weather import OpenWeatherMap
 
 load_dotenv()
 
@@ -86,64 +87,143 @@ class ActionSayWeather(Action):
                         os.environ["DEFAULT_LOCATION"])
 
         api_key = os.environ["OPENWEATHER_API_KEY"]
-        geocoding_base_url = "https://api.openweathermap.org/geo/1.0/direct"
-        query = "%20".join(location.split())
+        weather_api = OpenWeatherMap(api_key)
 
-        coordinates = (
-            f"{geocoding_base_url}"
-            f"?q={query}"
-            "&limit=1"
-            f"&appid={api_key}"
-        )
-        coords_response = requests.get(coordinates)
-        coords = coords_response.json()
-        unable_to_fetch = "Sorry, I can't get the weather at the moment."
-
-        if coords_response.status_code != 200:
+        try:
+            current = weather_api.get_current_weather(location)
+        except IndexError:
+            bad_location = f"Are your sure '{location}' exists? It's not fetching any results."
+            dispatcher.utter_message(text=bad_location)
+            return []
+        except requests.RequestException:
+            unable_to_fetch = "Sorry, I can't get the weather at the moment."
             dispatcher.utter_message(text=unable_to_fetch)
             return []
 
-        latitude, longitude = (coords[0]["lat"], coords[0]["lon"])
+        icon = current["weather"][0]["icon"]
+        place = current["name"]
+        description = current["weather"][0]["description"]
 
-        base_url = "https://api.openweathermap.org/data/2.5/weather"
-        current_weather = (
-            f"{base_url}"
-            f"?lat={latitude}&lon={longitude}"
-            "&units=imperial"
-            f"&appid={api_key}"
+        temp = self.round_float(current["main"]["temp"])
+        min_temp = self.round_float(current["main"]["temp_min"])
+        max_temp = self.round_float(current["main"]["temp_max"])
+
+        cloud_percent = current["clouds"]["all"]
+        visibility = current["visibility"]
+
+        icon_url = f"https://openweathermap.org/img/wn/{icon}@2x.png"
+
+        weather_report = (
+            f"{place} is currently experiencing {description}. "
+            f"Right now, the temperature is {temp}°F, "
+            f"with a low of {min_temp}°F and a high of {max_temp}°F."
+            "\n\n\n"
+            f"Cloudiness is at {cloud_percent}%."
+            "\n"
+            f"Current visibility is {visibility}m."
         )
 
-        current_weather = requests.get(current_weather)
-        current = current_weather.json()
+        dispatcher.utter_message(image=icon_url, text=weather_report)
 
-        print(current)
+        return []
 
-        if current_weather.status_code == 200:
-            icon = current["weather"][0]["icon"]
-            place = current["name"]
-            description = current["weather"][0]["description"]
+from actions.api.time import TimeAPI
 
-            temp = self.round_float(current["main"]["temp"])
-            min_temp = self.round_float(current["main"]["temp_min"])
-            max_temp = self.round_float(current["main"]["temp_max"])
+class ActionGetTime(Action):
 
-            cloud_percent = current["clouds"]["all"]
-            visibility = current["visibility"]
+    def name(self) -> Text:
+        return "action_get_time"
 
-            icon_url = f"https://openweathermap.org/img/wn/{icon}@2x.png"
+    async def run(self, 
+                  dispatcher: CollectingDispatcher,
+                  tracker: Tracker,
+                  domain: Dict[Text, Any]
+                ) -> List[Dict[Text, Any]]:
+        
+        location = next(tracker.get_latest_entity_values("GPE"), 
+                        os.environ["DEFAULT_LOCATION"])
 
-            weather_report = (
-                f"{place} is currently experiencing {description}. "
-                f"Right now, the temperature is {temp}°F, "
-                f"with a low of {min_temp}°F and a high of {max_temp}°F."
-                "\n\n\n"
-                f"Cloudiness is at {cloud_percent}%."
-                "\n"
-                f"Current visibility is {visibility}m."
-            )
+        api_key = os.environ["OPENWEATHER_API_KEY"]
+        weather_api = OpenWeatherMap(api_key)
 
-            dispatcher.utter_message(image=icon_url, text=weather_report)
-        else:
+        try:
+            location_coords = weather_api.get_coordinates(location)
+            lat, lon = (location_coords[0]["lat"], location_coords[0]["lon"])
+            coords = (lat, lon)
+        except IndexError:
+            bad_location = f"Are your sure '{location}' exists? It's not fetching any results."
+            dispatcher.utter_message(text=bad_location)
+            return []
+        except requests.RequestException:
+            unable_to_fetch = "Sorry, I can't get the geographic coordinates at the moment."
             dispatcher.utter_message(text=unable_to_fetch)
+            return []
+        
+        time_api = TimeAPI()
+        time = time_api.get_time(coords)
+
+        date = time["date"]
+        day_of_week = time["dayOfWeek"]
+        twelver_hour_format = time_api.get_twelve_hour_clock(coords)
+
+        message = (
+            f"Right now in {location}, it's {day_of_week} ({date}), {twelver_hour_format}."
+        )
+
+        dispatcher.utter_message(text=message)
+        return []
+    
+class ActionTellDayState(Action):
+
+    def name(self) -> Text:
+        return "action_tell_day_state"
+
+    async def run(self, 
+                  dispatcher: CollectingDispatcher,
+                  tracker: Tracker,
+                  domain: Dict[Text, Any]
+                ) -> List[Dict[Text, Any]]:
+
+        location = next(tracker.get_latest_entity_values("GPE"), 
+                        os.environ["DEFAULT_LOCATION"])
+        
+        is_daytime = next(tracker.get_latest_entity_values("is_daytime"), None)
+
+        if not is_daytime:
+            return []
+        
+        api_key = os.environ["OPENWEATHER_API_KEY"]
+        weather_api = OpenWeatherMap(api_key)
+        
+        try:
+            # Current weather gives us access to sunrise and sunset
+            current = weather_api.get_current_weather(location)
+        except IndexError:
+            bad_location = f"Are your sure '{location}' exists? It's not fetching any results."
+            dispatcher.utter_message(text=bad_location)
+            return []
+        except requests.RequestException:
+            unable_to_fetch = "Sorry, I can't get the weather at the moment."
+            dispatcher.utter_message(text=unable_to_fetch)
+            return []
+        
+        timezone_offset = current["timezone"]
+        coords = (current["coord"]["lat"], current["coord"]["lon"])
+
+        sunset = current["sys"]["sunset"] + timezone_offset
+        sunrise = current["sys"]["sunrise"] + timezone_offset
+
+        location_time = TimeAPI().get_unix_time(coords)
+
+        print(
+                f"Sunset: {sunset}\n"
+                f"Sunrise: {sunrise}\n"
+                f"location: {location_time}\n"
+            )
+        
+        if location_time >= sunrise and location_time <= sunset:
+            dispatcher.utter_message(text="As of right now, it is daytime in that area.")
+        else:
+            dispatcher.utter_message(text="It's nighttime as of the moment.")
 
         return []
