@@ -32,12 +32,7 @@ rules:
   - intent: is_it_daytime
   - action: action_tell_day_state
 
-
-# https://rasa.com/docs/rasa/fallback-handoff/#two-stage-fallback
-# In case of ambiguity, the bot will ask for a rephrase, and if
-# that doesn't work, it will say a default phrase.
-- rule: Implementation of the Two-Stage-Fallback
+- rule: Assume user wants to conversate if confidence <0.6
   steps:
   - intent: nlu_fallback
-  - action: action_two_stage_fallback
-  - active_loop: action_two_stage_fallback
+  - action: action_make_conversation

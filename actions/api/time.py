@@ -1,6 +1,6 @@
 from typing import Tuple
 from datetime import datetime, timezone
-from time import mktime
+import logging
 import requests
 
 class TimeAPI(object):
@@ -21,6 +21,9 @@ class TimeAPI(object):
         try:
             response = requests.get(current_time)
             response.raise_for_status()
+
+            logging.debug(f"Time elapsed: {response.elapsed}")
+
             time = response.json()
         except requests.exceptions.HTTPError as http_error:
             raise http_error from None
@@ -65,6 +68,6 @@ class TimeAPI(object):
         date_time = " ".join(self.data["dateTime"].split("T"))
         parsed_time = datetime.strptime(date_time[:-5], '%Y-%m-%d %H:%M:%S.%f')
 
-        twelver_hour_format = parsed_time.strftime('%I:%M %p')
+        twelve_hour_format = parsed_time.strftime('%I:%M %p')
 
-        return twelver_hour_format
+        return twelve_hour_format

@@ -4,10 +4,35 @@
 # See this guide on how to implement these action:
 # https://rasa.com/docs/rasa/custom-actions
 
+import logging
 from typing import Any, Text, Dict, List
 
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
+from rasa_sdk.events import ActionExecuted
+
+class ActionSessionStart(Action):
+    """
+    Bot introduction before first user message
+
+    See:
+    https://rasa.com/docs/rasa/default-actions/#action_session_start
+    """
+    def name(self) -> Text:
+        return "action_session_start"
+
+    async def run(self, 
+                  dispatcher: CollectingDispatcher,
+                  tracker: Tracker,
+                  domain: Dict[Text, Any]
+                ) -> List[Dict[Text, Any]]:
+
+        dispatcher.utter_message(response="utter_iamabot")
+        dispatcher.utter_message(response="utter_need_help")
+
+        # Listen for user messages after bot introduction.
+        # If left out, it will skip the next user input.
+        return [ActionExecuted("action_listen")]
 
 from jokeapi import Jokes
 from jokeapi.main import CategoryError
@@ -27,7 +52,7 @@ class ActionTellJoke(Action):
         category = next(tracker.get_latest_entity_values("joke_category"), 'Any')
         j = await Jokes()
 
-        print(category)
+        logging.debug(category)
 
         try:
             joke = await j.get_joke(category=[category], safe_mode=True)
@@ -164,10 +189,10 @@ class ActionGetTime(Action):
 
         date = time["date"]
         day_of_week = time["dayOfWeek"]
-        twelver_hour_format = time_api.get_twelve_hour_clock(coords)
+        twelve_hour_format = time_api.get_twelve_hour_clock(coords)
 
         message = (
-            f"Right now in {location}, it's {day_of_week} ({date}), {twelver_hour_format}."
+            f"Right now in {location}, it's {day_of_week} ({date}), {twelve_hour_format}."
         )
 
         dispatcher.utter_message(text=message)
@@ -215,15 +240,35 @@ class ActionTellDayState(Action):
 
         location_time = TimeAPI().get_unix_time(coords)
 
-        print(
+        logging.debug(
                 f"Sunset: {sunset}\n"
                 f"Sunrise: {sunrise}\n"
                 f"location: {location_time}\n"
             )
         
         if location_time >= sunrise and location_time <= sunset:
-            dispatcher.utter_message(text="As of right now, it is daytime in that area.")
+            dispatcher.utter_message(text=f"As of right now, it is daytime in the {location} area.")
         else:
-            dispatcher.utter_message(text="It's nighttime as of the moment.")
+            dispatcher.utter_message(text=f"It's nighttime as of the moment in {location}.")
+
+        return []
+    
+from actions.api.mistral import conversate_with_user
+
+class ActionMakeConversation(Action):
+
+    def name(self) -> Text:
+        return "action_make_conversation"
+
+    async def run(self, 
+                  dispatcher: CollectingDispatcher,
+                  tracker: Tracker,
+                  domain: Dict[Text, Any]
+                ) -> List[Dict[Text, Any]]:
+
+        user_msg = tracker.latest_message["text"]
+        llm_response = conversate_with_user(msg=user_msg)
+
+        dispatcher.utter_message(text=llm_response)
 
         return []

@@ -102,6 +102,7 @@ nlu:
     - utter something [2spooky4me]{"entity": "joke_category", "value": "spooky"}
     - utter something humorous
     - please knock my socks off
+    - [scary]{"entity": "joke_category", "value": "spooky"} joke
     - joke
     - make a joke about [programming socks]{"entity": "joke_category", "value": "programming"}
 
@@ -165,8 +166,10 @@ nlu:
 - intent: is_it_daytime
   examples: |
     - has the [sun risen]{"entity": "is_daytime", "value": "day"}?
-    - is it [nighttime]{"entity": "is_daytime", "value": "night"} in [Tokyo]("GPE")?
+    - is it [day]{"entity": "is_daytime", "value": "day"} at [Japan](GPE)
+    - is it [night]{"entity": "is_daytime", "value": "night"}
+    - is it [nighttime]{"entity": "is_daytime", "value": "night"} in [Tokyo](GPE)?
     - is it [daytime]{"entity": "is_daytime", "value": "day"} yet?
-    - is it [daytime]{"entity": "is_daytime", "value": "day"} in [Jakarta]("GPE")
+    - is it [daytime]{"entity": "is_daytime", "value": "day"} in [Jakarta](GPE)
     - can i see the [moon]{"entity": "is_daytime", "value": "night"} outside
-    - will the [sun]{"entity": "is_daytime", "value": "day"} be out in [Taipei]("GPE")
+    - will the [sun]{"entity": "is_daytime", "value": "day"} be out in [Taipei](GPE)

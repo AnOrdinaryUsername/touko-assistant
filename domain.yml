@@ -39,6 +39,8 @@ slots:
         entity: is_daytime
 
 actions:
+- action_session_start
+- action_make_conversation
 - action_tell_joke
 - action_say_weather
 - action_get_time
@@ -51,6 +53,11 @@ responses:
 
   utter_ask_default:
   - text: "I'm sorry sir, it's time for you to leave."
+
+  utter_need_help:
+  - text: "Is there anything I can do for you?"
+  - text: "Do you need any assistance?"
+  - text: "What can I do for you?"
 
   utter_greet:
   - text: "Hey! How are you?"

@@ -1,5 +1,6 @@
 from typing import Tuple
 import requests
+import logging
 
 class OpenWeatherMap(object):
     """
@@ -7,7 +8,7 @@ class OpenWeatherMap(object):
     https://openweathermap.org/api
     """
     def __init__(self, api_key: str):
-        self.api_key = api_key
+        self._api_key = api_key
 
     def get_coordinates(self, location: str) -> Tuple[float, float]:
         geocoding_base_url = "https://api.openweathermap.org/geo/1.0/direct"
@@ -17,13 +18,15 @@ class OpenWeatherMap(object):
             f"{geocoding_base_url}"
             f"?q={query}"
             "&limit=1"
-            f"&appid={self.api_key}"
+            f"&appid={self._api_key}"
         )
 
         try:
             response = requests.get(coordinates)
-            print(response.url)
             response.raise_for_status()
+
+            logging.debug(f"Time elapsed: {response.elapsed}")
+
             coords = response.json()
         except requests.exceptions.HTTPError as http_error:
             raise http_error from None
@@ -45,13 +48,15 @@ class OpenWeatherMap(object):
             f"{base_url}"
             f"?lat={latitude}&lon={longitude}"
             "&units=imperial"   
-            f"&appid={self.api_key}"
+            f"&appid={self._api_key}"
         )
 
         try:
             response = requests.get(current_weather)
-            print(response.url)
             response.raise_for_status()
+            
+            logging.debug(f"Time elapsed: {response.elapsed}")
+
             current_weather = response.json()
         except requests.exceptions.HTTPError as http_error:
             raise http_error from None
