@@ -1,11 +1,14 @@
 import os
 import requests
 import logging
+import json
+
 from dotenv import load_dotenv
+from typing import List, Dict, Any
 
 load_dotenv()
 
-def conversate_with_user(msg: str) -> str:
+def conversate_with_user(messages: List[Dict[str, Any]]) -> str:
     """
     Docs: https://docs.mistral.ai/
     """
@@ -34,12 +37,12 @@ def conversate_with_user(msg: str) -> str:
                 "role": "system",
                 "content": "You are a helpful and knowledgeable virtual assistant named Touko."
             },
-            {
-                "role": "user",
-                "content": f"{msg}"
-            }
-        ]
+            *messages
+        ],
+        "max_tokens": 300
     }
+
+    logging.debug(json.dumps(data, indent=2))
 
     # See https://docs.mistral.ai/api/#operation/createChatCompletion
     mistral_url = "https://api.mistral.ai/v1/chat/completions"
@@ -49,8 +52,9 @@ def conversate_with_user(msg: str) -> str:
         response.raise_for_status()
         chat_response = response.json()
 
-        logging.debug(chat_response)
         logging.debug(f"Time elapsed: {response.elapsed}")
+        logging.debug(json.dumps(chat_response, indent=2))
+
     except requests.exceptions.HTTPError as error:
         logging.error(error.strerror)
         return "Someone tell Vedal there is a problem with my AI"

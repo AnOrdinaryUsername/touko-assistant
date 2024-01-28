@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Any
 import requests
 import logging
 
@@ -35,7 +35,7 @@ class OpenWeatherMap(object):
 
         return coords
     
-    def get_current_weather(self, location: str) -> any:
+    def get_current_weather(self, location: str) -> Any:
         try:
             coords = self.get_coordinates(location)
         except requests.RequestException as error:

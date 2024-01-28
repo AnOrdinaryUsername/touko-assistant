@@ -36,3 +36,8 @@ rules:
   steps:
   - intent: nlu_fallback
   - action: action_make_conversation
+
+- rule: Out of Scope
+  steps:
+  - intent: out_of_scope
+  - action: action_make_conversation

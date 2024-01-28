@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Any
 from datetime import datetime, timezone
 import logging
 import requests
@@ -11,7 +11,7 @@ class TimeAPI(object):
     def __init__(self):
         self.data = None
 
-    def get_time(self, coords: Tuple[float, float]) -> any:
+    def get_time(self, coords: Tuple[float, float]) -> Any:
         base_url = "https://timeapi.io/api/Time/current/coordinate"
         current_time = (
             f"{base_url}"

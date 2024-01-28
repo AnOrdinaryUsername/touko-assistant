@@ -266,9 +266,23 @@ class ActionMakeConversation(Action):
                   domain: Dict[Text, Any]
                 ) -> List[Dict[Text, Any]]:
 
-        user_msg = tracker.latest_message["text"]
-        llm_response = conversate_with_user(msg=user_msg)
+        messages = []
+       
+        for event in tracker.events:
+            if event.get("event") == "user":
+                data = {
+                    "role": "user",
+                    "content": f"{event.get('text')}"
+                }
+                messages.append(data)
+            elif event.get("event") == "bot":
+                data = {
+                    "role": "assistant",
+                    "content": f"{event.get('text')}"
+                }
+                messages.append(data)
 
+        llm_response = conversate_with_user(messages)
         dispatcher.utter_message(text=llm_response)
 
         return []
