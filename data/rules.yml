@@ -32,6 +32,11 @@ rules:
   - intent: is_it_daytime
   - action: action_tell_day_state
 
+- rule: Check for any recent manga chapters
+  steps:
+  - intent: check_manga_updates
+  - action: action_check_manga_updates
+
 - rule: Assume user wants to conversate if confidence <0.6
   steps:
   - intent: nlu_fallback

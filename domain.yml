@@ -12,6 +12,7 @@ intents:
   - ask_weather
   - time_at_location
   - is_it_daytime
+  - check_manga_updates
 
 entities:
 - joke_category
@@ -45,6 +46,7 @@ actions:
 - action_say_weather
 - action_get_time
 - action_tell_day_state
+- action_check_manga_updates
 
 responses:
   utter_ask_rephrase:

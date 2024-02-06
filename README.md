@@ -32,7 +32,13 @@ rasa shell nlu
 - Time in X place ✅ 
 - Exchange rates
 - Bible quotes
-- Mangadex chapter feed
+- Mangadex chapter feed ✅
+- Recipes
+- Sports stuff
+- News
+- Smart home stuff
+  - Turn off lights
+  - Temperature/Humidity reading
 - Print stuff using ESC/POS Thermal Printer
   - Basic text
   - Messages posted by bot

@@ -203,7 +203,7 @@ class ActionTellDayState(Action):
     def name(self) -> Text:
         return "action_tell_day_state"
 
-    async def run(self, 
+    def run(self, 
                   dispatcher: CollectingDispatcher,
                   tracker: Tracker,
                   domain: Dict[Text, Any]
@@ -260,7 +260,7 @@ class ActionMakeConversation(Action):
     def name(self) -> Text:
         return "action_make_conversation"
 
-    async def run(self, 
+    def run(self, 
                   dispatcher: CollectingDispatcher,
                   tracker: Tracker,
                   domain: Dict[Text, Any]
@@ -285,4 +285,68 @@ class ActionMakeConversation(Action):
         llm_response = conversate_with_user(messages)
         dispatcher.utter_message(text=llm_response)
 
+        return []
+
+from actions.api.mangadex import MangaDex
+
+class ActionCheckMangaUpdates(Action):
+
+    def name(self) -> Text:
+        return "action_check_manga_updates"
+
+    def run(self, 
+                  dispatcher: CollectingDispatcher,
+                  tracker: Tracker,
+                  domain: Dict[Text, Any]
+                ) -> List[Dict[Text, Any]]:
+
+        username = os.environ["MANGADEX_USERNAME"]
+        password = os.environ["MANGADEX_PASSWORD"]
+        client_id = os.environ["MANGADEX_CLIENT_ID"]
+        client_secret = os.environ["MANGADEX_CLIENT_SECRET"]
+
+        dispatcher.utter_message(text="Okay, let me check right now.")
+
+        user = MangaDex(username, password, client_id, client_secret)
+        followed_manga = user.get_chapter_feed(content_rating=["safe", "suggestive", "erotica"])
+
+        if not followed_manga:
+            bad_response = (
+                "Unfortunately, there seems to be an issue when ",
+                "connecting to the MangaDex servers."
+            )
+            dispatcher.utter_message(text=bad_response)
+            return []
+
+        dispatcher.utter_message(text="Here are the most recent chapters:")
+
+        for i in range(len(followed_manga["data"])):
+            manga = followed_manga['data'][i]
+
+            relationships = list(
+                filter(
+                    lambda relation: relation['type'] == 'manga', 
+                    manga["relationships"]
+                )
+            )
+            manga_info = relationships[0]['attributes']
+
+            # Romanized title (e.g. Ogami Tsumiki to Kinichijou.)
+            ro_title = manga_info['title']['en']
+
+            # English alt title (e.g. Tsumiki Ogami & the Strange Everyday Life.)
+            alt_title = list(filter(lambda titles: titles.get('en', []), manga_info['altTitles']))
+            en_title = alt_title[0]['en']
+            en_title = f"({en_title})" if en_title else ""
+
+            series = f"{i + 1}) {ro_title} {en_title}"
+
+            page_count = manga['attributes']['pages']
+            chapter_title = manga['attributes']['title'] or "No title"
+            chapter = f"{chapter_title} - {page_count} pages"
+
+            dispatcher.utter_message(text=series)
+            dispatcher.utter_message(text=chapter)
+            dispatcher.utter_message(text="\n\n")
+        
         return []
