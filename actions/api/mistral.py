@@ -35,11 +35,12 @@ def conversate_with_user(messages: List[Dict[str, Any]]) -> str:
         "messages": [
             {
                 "role": "system",
-                "content": "You are a helpful and knowledgeable virtual assistant named Touko."
+                "content": ("You are a virtual assistant named Touko. "
+                             "Keep responses succinct and concise as possible.")
             },
             *messages
         ],
-        "max_tokens": 300
+        "max_tokens": 150
     }
 
     logging.debug(json.dumps(data, indent=2))

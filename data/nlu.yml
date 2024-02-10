@@ -1,194 +1,201 @@
 version: "3.1"
 
 nlu:
-- intent: greet
-  examples: |
-    - hey
-    - hello
-    - hi
-    - hello there
-    - good morning
-    - good evening
-    - moin
-    - hey there
-    - let's go
-    - hey dude
-    - goodmorning
-    - goodevening
-    - good afternoon
+  - intent: greet
+    examples: |
+      - hey
+      - hello
+      - hi
+      - hello there
+      - good morning
+      - good evening
+      - moin
+      - hey there
+      - let's go
+      - hey dude
+      - goodmorning
+      - goodevening
+      - good afternoon
 
-- intent: goodbye
-  examples: |
-    - cu
-    - good by
-    - cee you later
-    - good night
-    - bye
-    - goodbye
-    - have a nice day
-    - see you around
-    - bye bye
-    - see you later
+  - intent: goodbye
+    examples: |
+      - cu
+      - good by
+      - cee you later
+      - good night
+      - bye
+      - goodbye
+      - have a nice day
+      - see you around
+      - bye bye
+      - see you later
 
-- intent: affirm
-  examples: |
-    - yes
-    - y
-    - indeed
-    - of course
-    - that sounds good
-    - correct
+  - intent: affirm
+    examples: |
+      - yes
+      - y
+      - indeed
+      - of course
+      - that sounds good
+      - correct
 
-- intent: deny
-  examples: |
-    - no
-    - n
-    - never
-    - I don't think so
-    - don't like that
-    - no way
-    - not really
+  - intent: deny
+    examples: |
+      - no
+      - n
+      - never
+      - I don't think so
+      - don't like that
+      - no way
+      - not really
 
-- intent: mood_great
-  examples: |
-    - perfect
-    - great
-    - amazing
-    - feeling like a king
-    - wonderful
-    - I am feeling very good
-    - I am great
-    - I am amazing
-    - I am going to save the world
-    - super stoked
-    - extremely good
-    - so so perfect
-    - so good
-    - so perfect
+  - intent: mood_great
+    examples: |
+      - perfect
+      - great
+      - amazing
+      - feeling like a king
+      - wonderful
+      - I am feeling very good
+      - I am great
+      - I am amazing
+      - I am going to save the world
+      - super stoked
+      - extremely good
+      - so so perfect
+      - so good
+      - so perfect
 
-- intent: mood_unhappy
-  examples: |
-    - my day was horrible
-    - I am sad
-    - I don't feel very well
-    - I am disappointed
-    - super sad
-    - I'm so sad
-    - sad
-    - very sad
-    - unhappy
-    - not good
-    - not very good
-    - extremly sad
-    - so saad
-    - so sad
+  - intent: mood_unhappy
+    examples: |
+      - my day was horrible
+      - I am sad
+      - I don't feel very well
+      - I am disappointed
+      - super sad
+      - I'm so sad
+      - sad
+      - very sad
+      - unhappy
+      - not good
+      - not very good
+      - extremly sad
+      - so saad
+      - so sad
 
-- intent: bot_challenge
-  examples: |
-    - are you a bot?
-    - are you a human?
-    - am I talking to a bot?
-    - am I talking to a human?
+  - intent: bot_challenge
+    examples: |
+      - are you a bot?
+      - are you a human?
+      - am I talking to a bot?
+      - am I talking to a human?
 
-- intent: tell_joke
-  examples: |
-    - I want a [christmas]{"entity": "joke_category"} joke
-    - I want a joke
-    - tell me a [programming]{"entity": "joke_category"} joke
-    - tell me a [pun]{"entity": "joke_category", "value": "pun"}
-    - say something funny
-    - say something [punny]{"entity": "joke_category", "value": "pun"}
-    - let's hear something [spoopy]{"entity": "joke_category", "value": "spooky"}
-    - utter something [2spooky4me]{"entity": "joke_category", "value": "spooky"}
-    - utter something humorous
-    - please knock my socks off
-    - [scary]{"entity": "joke_category", "value": "spooky"} joke
-    - joke
-    - make a joke about [programming socks]{"entity": "joke_category", "value": "programming"}
+  - intent: tell_joke
+    examples: |
+      - I want a [christmas]{"entity": "joke_category"} joke
+      - I want a joke
+      - tell me a [programming]{"entity": "joke_category"} joke
+      - tell me a [pun]{"entity": "joke_category", "value": "pun"}
+      - say something funny
+      - say something [punny]{"entity": "joke_category", "value": "pun"}
+      - let's hear something [spoopy]{"entity": "joke_category", "value": "spooky"}
+      - utter something [2spooky4me]{"entity": "joke_category", "value": "spooky"}
+      - utter something humorous
+      - please knock my socks off
+      - [scary]{"entity": "joke_category", "value": "spooky"} joke
+      - joke
+      - make a joke about [programming socks]{"entity": "joke_category", "value": "programming"}
 
-- lookup: joke_category
-  examples: |
-    - programming
-    - miscellaneous
-    - pun
-    - spooky
-    - christmas
+  - lookup: joke_category
+    examples: |
+      - programming
+      - miscellaneous
+      - pun
+      - spooky
+      - christmas
 
-- synonym: programming
-  examples: |
-    - programming socks
-    - pogramming
-    - porgramming
-    - programmer
-    - program
+  - synonym: programming
+    examples: |
+      - programming socks
+      - pogramming
+      - porgramming
+      - programmer
+      - program
 
-- synonym: pun
-  examples: |
-    - punny
+  - synonym: pun
+    examples: |
+      - punny
 
-- synonym: spooky
-  examples: |
-    - spoopy
-    - 2spooky4me
-    - 3spooky5me
-    - 3spoopy5me
-    - scary
+  - synonym: spooky
+    examples: |
+      - spoopy
+      - 2spooky4me
+      - 3spooky5me
+      - 3spoopy5me
+      - scary
 
-- intent: ask_weather
-  examples: |
-    - weather
-    - wather
-    - today's weather
-    - [Paris]{"entity": "GPE"} weather
-    - will it be sunny today?
-    - will it rain today?
-    - what's the temperature?
-    - what's it like outside?
-    - what's is the weather in [Los Angeles]{"entity": "GPE"}
-    - is it hot or cold outside?
-    - should i bring an umbrella?
-    - are there a lot of clouds outside
-    - tell me the temp
-    - tell me the weather in [Berlin]{"entity": "GPE"}
-    - any weather updates
-    - is it cloudy
-    - how's the weather?
+  - intent: ask_weather
+    examples: |
+      - weather
+      - wather
+      - today's weather
+      - [Paris]{"entity": "GPE"} weather
+      - will it be sunny today?
+      - will it rain today?
+      - what's the temperature?
+      - what's it like outside?
+      - what's is the weather in [Los Angeles]{"entity": "GPE"}
+      - is it hot or cold outside?
+      - should i bring an umbrella?
+      - are there a lot of clouds outside
+      - tell me the temp
+      - tell me the weather in [Berlin]{"entity": "GPE"}
+      - any weather updates
+      - is it cloudy
+      - how's the weather?
 
-- intent: time_at_location
-  examples: |
-    - what time is it now
-    - what time is it in [Tokyo](GPE)
-    - time in [Madrid](GPE)
-    - tell me the tim in [Bat Cave](GPE)
-    - can you tell me the time in [Dubai](GPE)
-    - [Manila](GPE) time
+  - intent: time_at_location
+    examples: |
+      - what time is it now
+      - what time is it in [Tokyo](GPE)
+      - time in [Madrid](GPE)
+      - tell me the tim in [Bat Cave](GPE)
+      - can you tell me the time in [Dubai](GPE)
+      - [Manila](GPE) time
 
-- intent: is_it_daytime
-  examples: |
-    - has the [sun risen]{"entity": "is_daytime", "value": "day"}?
-    - is it [day]{"entity": "is_daytime", "value": "day"} at [Japan](GPE)
-    - is it [night]{"entity": "is_daytime", "value": "night"}
-    - is it [nighttime]{"entity": "is_daytime", "value": "night"} in [Tokyo](GPE)?
-    - is it [daytime]{"entity": "is_daytime", "value": "day"} yet?
-    - is it [daytime]{"entity": "is_daytime", "value": "day"} in [Jakarta](GPE)
-    - can i see the [moon]{"entity": "is_daytime", "value": "night"} outside
-    - will the [sun]{"entity": "is_daytime", "value": "day"} be out in [Taipei](GPE)
+  - intent: is_it_daytime
+    examples: |
+      - has the [sun risen]{"entity": "is_daytime", "value": "day"}?
+      - is it [day]{"entity": "is_daytime", "value": "day"} at [Japan](GPE)
+      - is it [night]{"entity": "is_daytime", "value": "night"}
+      - is it [nighttime]{"entity": "is_daytime", "value": "night"} in [Tokyo](GPE)?
+      - is it [daytime]{"entity": "is_daytime", "value": "day"} yet?
+      - is it [daytime]{"entity": "is_daytime", "value": "day"} in [Jakarta](GPE)
+      - can i see the [moon]{"entity": "is_daytime", "value": "night"} outside
+      - will the [sun]{"entity": "is_daytime", "value": "day"} be out in [Taipei](GPE)
 
-- intent: check_manga_updates
-  examples: |
-    - manga updates
-    - mango updates
-    - any peak fiction lately
-    - any manga updates?
-    - can you check mangadex for me?
+  - intent: check_manga_updates
+    examples: |
+      - manga updates
+      - mango updates
+      - any peak fiction lately
+      - any manga updates?
+      - can you check mangadex for me?
 
-- intent: out_of_scope
-  examples: |
-    - I want to order food
-    - What is 2 + 2?
-    - Who's the US President?
-    - skibidi dob dob dob yes
-    - Fill in the following: "Mary had a little _"
-    - what is the meaning of life?
-    - forsen
-    - what do decorators do in Python?
+  - intent: change_light_state
+    examples: |
+      - turn [off]{"entity": "is_on", "value": "false"} lights
+      - turn [on]{"entity": "is_on", "value": "true"} lights
+      - can you turn [off]{"entity": "is_on", "value": "false"} lights
+      - set the lights [on]{"entity": "is_on", "value": "true"} for me
+
+  - intent: out_of_scope
+    examples: |
+      - I want to order food
+      - What is 2 + 2?
+      - Who's the US President?
+      - skibidi dob dob dob yes
+      - Fill in the following: "Mary had a little _" 
+      - what is the meaning of life?
+      - forsen
+      - what do decorators do in Python?

@@ -9,7 +9,7 @@ from typing import Any, Text, Dict, List
 
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
-from rasa_sdk.events import ActionExecuted
+from rasa_sdk.events import ActionExecuted, SlotSet
 
 class ActionSessionStart(Action):
     """
@@ -288,6 +288,7 @@ class ActionMakeConversation(Action):
         return []
 
 from actions.api.mangadex import MangaDex
+import arrow
 
 class ActionCheckMangaUpdates(Action):
 
@@ -335,18 +336,69 @@ class ActionCheckMangaUpdates(Action):
             ro_title = manga_info['title']['en']
 
             # English alt title (e.g. Tsumiki Ogami & the Strange Everyday Life.)
-            alt_title = list(filter(lambda titles: titles.get('en', []), manga_info['altTitles']))
-            en_title = alt_title[0]['en']
+            alt_title = list(
+                filter(
+                    lambda titles: titles.get('en', []), 
+                    manga_info['altTitles']
+                )
+            )
+            en_title = alt_title[0]['en'] if alt_title else None
             en_title = f"({en_title})" if en_title else ""
 
             series = f"{i + 1}) {ro_title} {en_title}"
 
             page_count = manga['attributes']['pages']
+            page_count = f"{page_count} pages" if page_count > 1 else f"{page_count} page" 
+
             chapter_title = manga['attributes']['title'] or "No title"
-            chapter = f"{chapter_title} - {page_count} pages"
+            elapsed_time = arrow.get(manga['attributes']['publishAt']).humanize()
+
+            chapter = f"{chapter_title} - {page_count} ({elapsed_time})"
 
             dispatcher.utter_message(text=series)
             dispatcher.utter_message(text=chapter)
             dispatcher.utter_message(text="\n\n")
         
+        return [SlotSet("manga_history", followed_manga['data'])]
+
+import json
+
+class ActionSetLightState(Action):
+    """
+    Uses Shelly Plug Plus US
+    See: https://shelly-api-docs.shelly.cloud/gen2/ComponentsAndServices/Switch
+    """
+    def name(self) -> Text:
+        return "action_set_light_state"
+
+    def run(self, 
+                  dispatcher: CollectingDispatcher,
+                  tracker: Tracker,
+                  domain: Dict[Text, Any]
+                ) -> List[Dict[Text, Any]]:
+
+        is_on = next(tracker.get_latest_entity_values("is_on"), "false")
+        shelly_ip = os.environ['SHELLY_IP']
+
+        params = {
+            "id": 0,
+            "on": is_on
+        }
+
+        try:
+            url = f"http://{shelly_ip}/rpc/Switch.Set"
+            response = requests.get(url, params=params)
+            response.raise_for_status()
+
+            logging.debug(f"Time elapsed: {response.elapsed}")
+            logging.debug(json.dumps(response.json(), indent=2))
+
+        except requests.exceptions.HTTPError as error:
+            logging.error(error.strerror)
+            dispatcher.utter_message("Sorry, but I can't connect to the Shelly Device.") 
+
+        # This looks silly but you can't set boolean slots in intents
+        light_state = "on" if is_on == "true" else "off"
+        dispatcher.utter_message(f"Turning lights {light_state}.") 
+
         return []

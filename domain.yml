@@ -13,11 +13,13 @@ intents:
   - time_at_location
   - is_it_daytime
   - check_manga_updates
+  - change_light_state
 
 entities:
-- joke_category
-- GPE
-- is_daytime
+  - joke_category
+  - GPE
+  - is_daytime
+  - is_on
 
 slots:
   joke_category:
@@ -38,48 +40,55 @@ slots:
     mappings:
       - type: from_entity
         entity: is_daytime
+  is_on:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: is_on
 
 actions:
-- action_session_start
-- action_make_conversation
-- action_tell_joke
-- action_say_weather
-- action_get_time
-- action_tell_day_state
-- action_check_manga_updates
+  - action_session_start
+  - action_make_conversation
+  - action_tell_joke
+  - action_say_weather
+  - action_get_time
+  - action_tell_day_state
+  - action_check_manga_updates
+  - action_set_light_state
 
 responses:
   utter_ask_rephrase:
-  - text: "Apologies, but I didn't quite understand the message. Try rewording it."
-  - text: "Sorry, but can you please rephrase the message?"
+    - text: "Apologies, but I didn't quite understand the message. Try rewording it."
+    - text: "Sorry, but can you please rephrase the message?"
 
   utter_ask_default:
-  - text: "I'm sorry sir, it's time for you to leave."
+    - text: "I'm sorry sir, it's time for you to leave."
 
   utter_need_help:
-  - text: "Is there anything I can do for you?"
-  - text: "Do you need any assistance?"
-  - text: "What can I do for you?"
+    - text: "Is there anything I can do for you?"
+    - text: "Do you need any assistance?"
+    - text: "What can I do for you?"
 
   utter_greet:
-  - text: "Hey! How are you?"
+    - text: "Hey! How are you?"
 
   utter_cheer_up:
-  - text: "Here is something to cheer you up:"
-    image: "https://i.imgur.com/nGF1K8f.jpg"
+    - text: "Here is something to cheer you up:"
+      image: "https://i.imgur.com/nGF1K8f.jpg"
 
   utter_did_that_help:
-  - text: "Did that help you?"
+    - text: "Did that help you?"
 
   utter_happy:
-  - text: "Great, carry on!"
+    - text: "Great, carry on!"
 
   utter_goodbye:
-  - text: "Bye"
+    - text: "Bye"
 
   utter_iamabot:
-  - text: "My name is Touko, your personal virtual assistant. I'm a bot designed to assist you."
-  - text: "I'm Touko, a bot that aims to please."
+    - text: "My name is Touko, your personal virtual assistant. I'm a bot designed to assist you."
+    - text: "I'm Touko, a bot that aims to please."
 
 session_config:
   session_expiration_time: 60

@@ -1,48 +1,52 @@
 version: "3.1"
 
 rules:
+  - rule: Say goodbye anytime the user says goodbye
+    steps:
+      - intent: goodbye
+      - action: utter_goodbye
 
-- rule: Say goodbye anytime the user says goodbye
-  steps:
-  - intent: goodbye
-  - action: utter_goodbye
+  - rule: Say 'I am a bot' anytime the user challenges
+    steps:
+      - intent: bot_challenge
+      - action: utter_iamabot
 
-- rule: Say 'I am a bot' anytime the user challenges
-  steps:
-  - intent: bot_challenge
-  - action: utter_iamabot
+  - rule: Tell a joke when the user requests one
+    steps:
+      - intent: tell_joke
+      - action: action_tell_joke
 
-- rule: Tell a joke when the user requests one
-  steps:
-  - intent: tell_joke
-  - action: action_tell_joke
+  - rule: Say the weather
+    steps:
+      - intent: ask_weather
+      - action: action_say_weather
 
-- rule: Say the weather
-  steps:
-  - intent: ask_weather
-  - action: action_say_weather
+  - rule: State the time
+    steps:
+      - intent: time_at_location
+      - action: action_get_time
 
-- rule: State the time
-  steps:
-  - intent: time_at_location
-  - action: action_get_time
+  - rule: Tell user if its daytime or nighttime
+    steps:
+      - intent: is_it_daytime
+      - action: action_tell_day_state
 
-- rule: Tell user if its daytime or nighttime
-  steps:
-  - intent: is_it_daytime
-  - action: action_tell_day_state
+  - rule: Check for any recent manga chapters
+    steps:
+      - intent: check_manga_updates
+      - action: action_check_manga_updates
 
-- rule: Check for any recent manga chapters
-  steps:
-  - intent: check_manga_updates
-  - action: action_check_manga_updates
+  - rule: Turn lights on or off
+    steps:
+      - intent: change_light_state
+      - action: action_set_light_state
 
-- rule: Assume user wants to conversate if confidence <0.6
-  steps:
-  - intent: nlu_fallback
-  - action: action_make_conversation
+  - rule: Assume user wants to conversate if confidence <0.6
+    steps:
+      - intent: nlu_fallback
+      - action: action_make_conversation
 
-- rule: Out of Scope
-  steps:
-  - intent: out_of_scope
-  - action: action_make_conversation
+  - rule: Out of Scope
+    steps:
+      - intent: out_of_scope
+      - action: action_make_conversation
