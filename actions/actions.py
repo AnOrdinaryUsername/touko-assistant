@@ -309,7 +309,13 @@ class ActionCheckMangaUpdates(Action):
         dispatcher.utter_message(text="Okay, let me check right now.")
 
         user = MangaDex(username, password, client_id, client_secret)
-        followed_manga = user.get_chapter_feed(content_rating=["safe", "suggestive", "erotica"])
+
+        chapter_count = next(tracker.get_latest_entity_values("number"), 5)
+
+        followed_manga = user.get_chapter_feed(
+            content_rating=["safe", "suggestive", "erotica"],
+            limit=chapter_count
+        )
 
         if not followed_manga:
             bad_response = (
@@ -361,6 +367,71 @@ class ActionCheckMangaUpdates(Action):
         
         return [SlotSet("manga_history", followed_manga['data'])]
 
+class ActionTellMangaDetails(Action):
+
+    def name(self) -> Text:
+        return "action_tell_manga_details"
+
+    def run(self, 
+                  dispatcher: CollectingDispatcher,
+                  tracker: Tracker,
+                  domain: Dict[Text, Any]
+                ) -> List[Dict[Text, Any]]:
+        
+        index = next(tracker.get_latest_entity_values("number"), None)
+        manga_history = tracker.get_slot("manga_history")
+
+        if not index:
+            dispatcher.utter_message(
+                "Unable to extract details due to the lack of a value in the 'number' entity."
+            )
+            return []
+
+        if not manga_history:
+            dispatcher.utter_message(
+                "Unable to get details due to a lack of a manga history. "
+                "Ask for 'manga updates' to update the history."    
+            )
+            return []
+
+        if index > len(manga_history) or index < 1:
+            dispatcher.utter_message(
+                f"Sorry, but {index} is out of the history range. "
+                f"There are only {len(manga_history)} in my memory."
+            )
+            return []
+        
+        relationships = list(
+                filter(
+                    lambda relation: relation['type'] == 'manga', 
+                    manga_history[index - 1]["relationships"]
+                )
+            )
+        
+        manga_info = relationships[0]['attributes']
+
+        ro_title = manga_info['title']['en']
+        description = manga_info['description']['en'] or "No description provided"
+
+        UNKNOWN = "Unknown"
+
+        publication_year = manga_info['year'] or UNKNOWN
+        status = manga_info['status'].capitalize() or UNKNOWN
+        content_rating = manga_info['contentRating'].capitalize() or UNKNOWN
+
+        series_id = relationships[0]['id']
+        link = f"https://mangadex.org/title/{series_id}"
+
+        dispatcher.utter_message(text=ro_title)
+        dispatcher.utter_message(text=f"PUBLICATION: {publication_year}, {status}")
+        dispatcher.utter_message(text=f"RATING: {content_rating}")
+        dispatcher.utter_message(text="\n\n")
+        dispatcher.utter_message(text=link)
+        dispatcher.utter_message(text="\n\n")
+        dispatcher.utter_message(text=description)
+
+        return []
+
 import json
 
 class ActionSetLightState(Action):
@@ -378,7 +449,7 @@ class ActionSetLightState(Action):
                 ) -> List[Dict[Text, Any]]:
 
         is_on = next(tracker.get_latest_entity_values("is_on"), "false")
-        shelly_ip = os.environ['SHELLY_IP']
+        shelly_ip = os.environ['SHELLY_PLUG_IP']
 
         params = {
             "id": 0,
@@ -400,5 +471,83 @@ class ActionSetLightState(Action):
         # This looks silly but you can't set boolean slots in intents
         light_state = "on" if is_on == "true" else "off"
         dispatcher.utter_message(f"Turning lights {light_state}.") 
+
+        return []
+
+import aiohttp
+import asyncio
+
+class ActionCheckTempAndStuff(Action):
+    """
+    Uses Shelly Gen 3 H&T. Measures temperature, humidity, and device power.
+    See: https://shelly-api-docs.shelly.cloud/gen2/Devices/Gen2/ShellyPlusHT
+
+    NOTE: It says it has a REST API, but due to being battery-powered you can't
+    actually use it since it's in sleep mode for energy conservation reasons. REST
+    API only works for like 3 minutes after you press the reset button until it hibernates.
+
+    https://shelly-api-docs.shelly.cloud/gen2/General/SleepManagementForBatteryDevices
+    """
+    def name(self) -> Text:
+        return "action_check_temp_and_stuff"
+
+    async def fetch_data(self, session, url):
+        response = await session.request(method="GET", url=url)
+        response.raise_for_status()
+        data = await response.json()
+        return data
+
+    async def report_results(self):
+        shelly_ip = os.environ['SHELLY_HT_IP']
+
+        urls = [
+            f"http://{shelly_ip}/rpc/Temperature.GetStatus?id=0",
+            f"http://{shelly_ip}/rpc/Humidity.GetStatus?id=0",
+            f"http://{shelly_ip}/rpc/DevicePower.GetStatus?id=0",
+        ]
+        
+        async with aiohttp.ClientSession() as session:
+            try:
+                tasks = [self.fetch_data(session, url) for url in urls]
+                results = await asyncio.gather(*tasks)
+            except Exception:
+                return []
+
+        return results
+
+    async def run(self, 
+                  dispatcher: CollectingDispatcher,
+                  tracker: Tracker,
+                  domain: Dict[Text, Any]
+            ) -> List[Dict[Text, Any]]:
+        
+        results = await self.report_results()
+
+        logging.debug(results)
+
+        if not results:
+            dispatcher.utter_message("Sorry, but I can't connect to the Shelly Device.") 
+
+        for result in results:
+            if result.get('tF', None):
+                temp = f"The current indoor temp is {result.get('tF')}°F."
+                dispatcher.utter_message(text=temp)
+
+            elif result.get('rh', None):
+                humidity = f"Indoor humidity is at {result.get('rh')}%."
+                dispatcher.utter_message(text=humidity)
+
+            elif result.get('battery', None):
+                battery_percent = result['battery']['percent']
+
+                if result['battery']['percent'] <= 25 and not result['external']['present']:
+                    dispatcher.utter_message(
+                        text=(
+                            f"Keep in mind your battery is low ({battery_percent}%). "
+                            "Replace them soon!"
+                        )
+                    )
+                else:
+                    dispatcher.utter_message(text=f"Device battery is at {battery_percent}%.")
 
         return []

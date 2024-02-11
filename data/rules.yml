@@ -36,10 +36,20 @@ rules:
       - intent: check_manga_updates
       - action: action_check_manga_updates
 
+  - rule: Get manga details
+    steps:
+      - intent: get_manga_details
+      - action: action_tell_manga_details
+
   - rule: Turn lights on or off
     steps:
       - intent: change_light_state
       - action: action_set_light_state
+
+  - rule: Get the indoor temperature (and other stuff) reading
+    steps:
+      - intent: get_temp_and_stuff
+      - action: action_check_temp_and_stuff
 
   - rule: Assume user wants to conversate if confidence <0.6
     steps:

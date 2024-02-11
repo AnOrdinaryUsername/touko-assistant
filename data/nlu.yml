@@ -181,6 +181,17 @@ nlu:
       - any peak fiction lately
       - any manga updates?
       - can you check mangadex for me?
+      - get the last 20 manga updates
+
+  # Duckling auto extracts numbers entity
+  # Run `docker run -p 8000:8000 rasa/duckling` for duckling server
+  - intent: get_manga_details
+    examples: |
+      - what is number 1 about?
+      - tell me more details about the second manga
+      - remind me what the 3rd option is
+      - elaborate on 2
+      - describe number five
 
   - intent: change_light_state
     examples: |
@@ -188,6 +199,15 @@ nlu:
       - turn [on]{"entity": "is_on", "value": "true"} lights
       - can you turn [off]{"entity": "is_on", "value": "false"} lights
       - set the lights [on]{"entity": "is_on", "value": "true"} for me
+
+  - intent: get_temp_and_stuff
+    examples: |
+      - what is the current temperature and humidity
+      - tell me the temp
+      - what's the humidity like
+      - what is the indoor temperature
+      - give me a indoors temp reading
+      - is it hot inside or what?
 
   - intent: out_of_scope
     examples: |
