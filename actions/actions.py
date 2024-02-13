@@ -212,9 +212,9 @@ class ActionTellDayState(Action):
         location = next(tracker.get_latest_entity_values("GPE"), 
                         os.environ["DEFAULT_LOCATION"])
         
-        is_daytime = next(tracker.get_latest_entity_values("is_daytime"), None)
+        user_ask = next(tracker.get_latest_entity_values("is_daytime"), None)
 
-        if not is_daytime:
+        if not user_ask:
             return []
         
         api_key = os.environ["OPENWEATHER_API_KEY"]
@@ -247,9 +247,15 @@ class ActionTellDayState(Action):
             )
         
         if location_time >= sunrise and location_time <= sunset:
-            dispatcher.utter_message(text=f"As of right now, it is daytime in the {location} area.")
+            if user_ask == 'day':
+                dispatcher.utter_message(text=f"Correct, it's daytime in the {location} area.")
+            else:
+                dispatcher.utter_message(text=f"No, it's daytime in the {location} area.")
         else:
-            dispatcher.utter_message(text=f"It's nighttime as of the moment in {location}.")
+            if user_ask == 'night':
+                dispatcher.utter_message(text=f"Correct, it's nighttime as of the moment in {location}.")
+            else:
+                dispatcher.utter_message(text=f"No, it's nighttime as of the moment in {location}.")
 
         return []
     
@@ -526,28 +532,58 @@ class ActionCheckTempAndStuff(Action):
         logging.debug(results)
 
         if not results:
-            dispatcher.utter_message("Sorry, but I can't connect to the Shelly Device.") 
+            # Read previous reading data if API not available 
+            json_file = os.path.join(os.getcwd(), "actions", "api", "shelly", "gen3_ht_data.json")
 
-        for result in results:
-            if result.get('tF', None):
-                temp = f"The current indoor temp is {result.get('tF')}°F."
-                dispatcher.utter_message(text=temp)
+            with open(json_file) as file:
+                json_data = json.load(file)
+            
+            dispatcher.utter_message(
+                "Unable to fetch REST API. Using previous readings instead "
+                f"(last updated {arrow.get(json_data['updatedAt']).humanize()})."
+            )
 
-            elif result.get('rh', None):
-                humidity = f"Indoor humidity is at {result.get('rh')}%."
-                dispatcher.utter_message(text=humidity)
+            temp = f"The current indoor temp is {json_data.get('tF')}°F."
+            dispatcher.utter_message(text=temp)
 
-            elif result.get('battery', None):
-                battery_percent = result['battery']['percent']
+            humidity = f"Indoor humidity is at {json_data.get('rh')}%."
+            dispatcher.utter_message(text=humidity)
 
-                if result['battery']['percent'] <= 25 and not result['external']['present']:
-                    dispatcher.utter_message(
-                        text=(
-                            f"Keep in mind your battery is low ({battery_percent}%). "
-                            "Replace them soon!"
-                        )
+            battery_percent = json_data['battery']
+            is_charging = json_data['isCharging']
+
+            if battery_percent <= 25 and not is_charging:
+                dispatcher.utter_message(
+                    text=(
+                        f"Keep in mind your battery is low ({battery_percent}%). "
+                        "Replace them soon!"
                     )
-                else:
-                    dispatcher.utter_message(text=f"Device battery is at {battery_percent}%.")
+                )
+            else:
+                dispatcher.utter_message(text=f"Device battery is at {battery_percent}%.")
+
+        else:
+            for result in results:
+                if result.get('tF', None):
+                    temp = f"The current indoor temp is {result.get('tF')}°F."
+                    dispatcher.utter_message(text=temp)
+
+                elif result.get('rh', None):
+                    humidity = f"Indoor humidity is at {result.get('rh')}%."
+                    dispatcher.utter_message(text=humidity)
+
+                elif result.get('battery', None):
+                    battery_percent = result['battery']['percent']
+                    is_charging = result['external']['present']
+
+                    if battery_percent <= 25 and not is_charging:
+                        dispatcher.utter_message(
+                            text=(
+                                f"Keep in mind your battery is low ({battery_percent}%). "
+                                "Replace them soon!"
+                            )
+                        )
+                    else:
+                        dispatcher.utter_message(text=f"Device battery is at {battery_percent}%.")
 
         return []

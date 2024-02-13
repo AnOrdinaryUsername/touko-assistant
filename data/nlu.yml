@@ -202,9 +202,9 @@ nlu:
 
   - intent: get_temp_and_stuff
     examples: |
-      - what is the current temperature and humidity
-      - tell me the temp
-      - what's the humidity like
+      - what is the current indoor temperature and humidity
+      - tell me the indoor temp
+      - what's the indoors humidity like
       - what is the indoor temperature
       - give me a indoors temp reading
       - is it hot inside or what?
